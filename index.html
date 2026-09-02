@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JLOODNA | Global Trading — Boutik ou a</title>
+<meta name="description" content="JLOODNA se boutik sou entènèt pou Ayiti ak Repiblik Dominikèn. Achte fasil, peye ak PayPal oswa lè livre.">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div id="jl-header"></div>
+
+<section class="jl-hero">
+  <div class="container">
+    <h1><span class="lang-ht">Tout sa w bezwen, yon sèl kote</span><span class="lang-es">Todo lo que necesitas, en un solo lugar</span></h1>
+    <p><span class="lang-ht">Achte an sekirite, peye ak PayPal oswa peye lè w resevwa. Livrezon nan tout Ayiti ak Sendomeng.</span>
+       <span class="lang-es">Compra con seguridad, paga con PayPal o al recibir. Entregas en toda Haití y República Dominicana.</span></p>
+    <a href="/shop.html" class="btn btn-primary" data-i18n="nav_shop">Boutik</a>
+  </div>
+</section>
+
+<main class="container">
+  <section class="jl-section">
+    <div class="jl-section-head">
+      <h2 data-i18n="featured_products">Pwodwi popilè</h2>
+      <a href="/shop.html?featured=1" data-i18n="view_all">Wè tout</a>
+    </div>
+    <div class="jl-grid" id="featured-grid"></div>
+  </section>
+
+  <section class="jl-section">
+    <div class="jl-section-head">
+      <h2 data-i18n="new_products">Nouvo pwodwi</h2>
+      <a href="/shop.html?is_new=1" data-i18n="view_all">Wè tout</a>
+    </div>
+    <div class="jl-grid" id="new-grid"></div>
+  </section>
+
+  <section class="jl-section" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;text-align:center">
+    <div><div style="font-size:2rem">🚚</div><p data-i18n="free_shipping_note">Livrezon rapid nan tout Ayiti ak Sendomeng</p></div>
+    <div><div style="font-size:2rem">🔒</div><p data-i18n="secure_payment_note">Peman an sekirite</p></div>
+    <div><div style="font-size:2rem">💵</div><p data-i18n="cod_note">Peye lè w resevwa</p></div>
+  </section>
+</main>
+
+<div id="jl-footer"></div>
+
+<script src="/js/config.js"></script>
+<script src="/data/products.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/i18n.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/layout.js"></script>
+<script src="/js/product-card.js"></script>
+<script>
+function loadHome() {
+  const products = window.JL_STORE.getProducts().filter(p => p.status === 'active');
+  const featured = products.filter(p => p.is_featured).slice(0, 8);
+  const news = products.filter(p => p.is_new).slice(0, 8);
+  document.getElementById('featured-grid').innerHTML = featured.map(renderProductCard).join('') || '<p class="empty-state" data-i18n="no_results">Pa gen rezilta.</p>';
+  document.getElementById('new-grid').innerHTML = news.map(renderProductCard).join('') || '<p class="empty-state" data-i18n="no_results">Pa gen rezilta.</p>';
+  window.JL_I18N.applyTranslations();
+}
+document.addEventListener('DOMContentLoaded', loadHome);
+document.addEventListener('jl:lang-changed', loadHome);
+</script>
+</body>
+</html>

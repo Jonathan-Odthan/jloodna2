@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title id="page-title">Pwodwi — JLOODNA</title>
+<link rel="stylesheet" href="/css/style.css">
+<style>
+.pd-layout{display:grid;grid-template-columns:1fr;gap:30px}
+@media(min-width:860px){.pd-layout{grid-template-columns:1fr 1fr}}
+.pd-gallery-main{aspect-ratio:1/1;background:var(--paper-dim);border-radius:var(--radius);overflow:hidden;margin-bottom:10px}
+.pd-gallery-main img{width:100%;height:100%;object-fit:cover}
+.pd-thumbs{display:flex;gap:8px}
+.pd-thumbs img{width:64px;height:64px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid transparent}
+.pd-thumbs img.active{border-color:var(--mango-500)}
+.pd-qty-row{display:flex;align-items:center;gap:16px;margin:18px 0}
+</style>
+</head>
+<body>
+<div id="jl-header"></div>
+<main class="container jl-section">
+  <div class="breadcrumb"><a href="/index.html" data-i18n="nav_home">Akèy</a> / <a href="/shop.html" data-i18n="nav_shop">Boutik</a> / <span id="crumb-name"></span></div>
+  <div id="pd-content"></div>
+  <section class="jl-section" id="related-section" style="display:none">
+    <div class="jl-section-head"><h2 data-i18n="related_products">Pwodwi ki gen rapò</h2></div>
+    <div class="jl-grid" id="related-grid"></div>
+  </section>
+</main>
+<div id="jl-footer"></div>
+<script src="/js/config.js"></script>
+<script src="/data/products.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/i18n.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/layout.js"></script>
+<script src="/js/product-card.js"></script>
+<script>
+const slug = new URLSearchParams(location.search).get('slug');
+
+function loadProduct() {
+  const currency = window.JL_I18N.currentCurrency();
+  const p = window.JL_STORE.getProductBySlug(slug);
+  if (!p) { document.getElementById('pd-content').innerHTML = '<p class="empty-state">Pwodwi pa jwenn.</p>'; return; }
+
+  document.getElementById('page-title').textContent = `${p.name_ht} — JLOODNA`;
+  document.getElementById('crumb-name').textContent = p.name_ht;
+
+  const price = window.JL_STORE.convert(p.price_htg, currency);
+  const oldPrice = p.old_price_htg ? window.JL_STORE.convert(p.old_price_htg, currency) : null;
+  const images = (p.images && p.images.length) ? p.images : ['/img/products/placeholder-1.svg'];
+  const oldPriceHtml = oldPrice ? `<span class="old" style="font-size:1rem">${window.JL_STORE.formatMoney(oldPrice, currency)}</span>` : '';
+  const stockLabel = p.stock > 0 ? `<span class="status-pill delivered" data-i18n="in_stock">Disponib</span>` : `<span class="status-pill cancelled" data-i18n="out_of_stock">Pa gen stòk</span>`;
+
+  document.getElementById('pd-content').innerHTML = `
+    <div class="pd-layout">
+      <div>
+        <div class="pd-gallery-main"><img id="main-img" src="${images[0]}" alt="${p.name_ht}"></div>
+        <div class="pd-thumbs">${images.map((img, i) => `<img src="${img}" class="${i === 0 ? 'active' : ''}" onclick="document.getElementById('main-img').src='${img}'; document.querySelectorAll('.pd-thumbs img').forEach(t=>t.classList.remove('active')); this.classList.add('active')">`).join('')}</div>
+      </div>
+      <div>
+        <h1><span class="lang-ht">${p.name_ht}</span><span class="lang-es">${p.name_es}</span></h1>
+        <p style="color:var(--ink-soft)">SKU: ${p.sku} ${p.brand ? '· ' + p.brand : ''}</p>
+        ${stockLabel}
+        <div class="jl-price" style="margin:14px 0"><span class="now" style="font-size:1.6rem">${window.JL_STORE.formatMoney(price, currency)}</span>${oldPriceHtml}</div>
+        <p><span class="lang-ht">${p.description_ht || ''}</span><span class="lang-es">${p.description_es || ''}</span></p>
+        <div class="pd-qty-row">
+          <div class="jl-qty">
+            <button onclick="changeQty(-1)">−</button>
+            <span id="qty-val">1</span>
+            <button onclick="changeQty(1)">+</button>
+          </div>
+          <button class="btn btn-primary" id="add-cart-btn" ${p.stock <= 0 ? 'disabled' : ''}><span data-i18n="add_to_cart">Ajoute nan panyen</span></button>
+        </div>
+        <a href="/cart.html" id="buy-now-link" class="btn btn-teal btn-block" style="margin-top:6px"><span data-i18n="buy_now">Achte kounye a</span></a>
+      </div>
+    </div>`;
+
+  document.getElementById('add-cart-btn').addEventListener('click', () => {
+    window.JL_CART.addToCart(p.id, Number(document.getElementById('qty-val').textContent));
+  });
+  document.getElementById('buy-now-link').addEventListener('click', () => {
+    window.JL_CART.addToCart(p.id, Number(document.getElementById('qty-val').textContent));
+  });
+
+  const related = window.JL_STORE.getProducts().filter(r => r.category_id === p.category_id && r.id !== p.id).slice(0, 4);
+  if (related.length) {
+    document.getElementById('related-section').style.display = '';
+    document.getElementById('related-grid').innerHTML = related.map(renderProductCard).join('');
+  }
+  window.JL_I18N.applyTranslations();
+}
+function changeQty(delta) {
+  const el = document.getElementById('qty-val');
+  el.textContent = Math.max(1, Number(el.textContent) + delta);
+}
+document.addEventListener('DOMContentLoaded', loadProduct);
+document.addEventListener('jl:lang-changed', loadProduct);
+</script>
+</body>
+</html>

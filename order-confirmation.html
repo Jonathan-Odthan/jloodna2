@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ht">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="order_confirmed">Kòmand konfime — JLOODNA</title><link rel="stylesheet" href="/css/style.css"></head>
+<body>
+<div id="jl-header"></div>
+<main class="container jl-section text-center">
+  <div style="font-size:3.2rem">✅</div>
+  <h1 data-i18n="order_confirmed">Kòmand konfime</h1>
+  <p><span data-i18n="order_number">Nimewo kòmand</span>: <strong id="order-num"></strong></p>
+  <div id="order-detail" style="max-width:520px;margin:24px auto;text-align:left"></div>
+  <a href="/shop.html" class="btn btn-primary" data-i18n="continue_shopping">Kontinye achte</a>
+</main>
+<div id="jl-footer"></div>
+<script src="/js/config.js"></script>
+<script src="/data/products.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/i18n.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/layout.js"></script>
+<script src="/js/orders.js"></script>
+<script>
+const orderNumber = new URLSearchParams(location.search).get('order');
+document.getElementById('order-num').textContent = orderNumber || '—';
+function load() {
+  const o = window.JL_ORDERS.getOrders().find(x => x.order_number === orderNumber);
+  if (!o) return;
+  document.getElementById('order-detail').innerHTML = `
+    <div class="jl-summary">
+      <div class="jl-summary-row"><span>${o.full_name}</span><span>${o.phone}</span></div>
+      <div class="jl-summary-row"><span data-i18n="address">Adrès</span><span>${o.address}</span></div>
+      <div class="jl-summary-row"><span data-i18n="payment_method">Metòd peman</span><span>${o.payment_method === 'cash_on_delivery' ? 'Peye lè livre' : 'PayPal'}</span></div>
+      <div class="jl-summary-row total"><span data-i18n="total">Total</span><span>${window.JL_STORE.formatMoney(o.total_htg, 'HTG')}</span></div>
+    </div>`;
+  window.JL_I18N.applyTranslations();
+}
+document.addEventListener('DOMContentLoaded', load);
+</script>
+</body></html>

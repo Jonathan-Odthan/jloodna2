@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#F1ECE2"/>
+  <circle cx="200" cy="170" r="90" fill="#F5A623" opacity="0.85"/>
+  <rect x="90" y="260" width="220" height="70" rx="12" fill="#F5A623" opacity="0.5"/>
+  <text x="200" y="380" font-family="Arial" font-size="20" fill="#4B5F5C" text-anchor="middle">JLOODNA</text>
+</svg>

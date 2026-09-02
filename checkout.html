@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="checkout">Checkout — JLOODNA</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div id="jl-header"></div>
+<main class="container jl-section">
+  <h1 data-i18n="checkout">Peye kounye a</h1>
+  <div id="checkout-alert"></div>
+  <div class="jl-checkout-grid">
+    <form id="checkout-form">
+      <div class="field"><label class="field-label" data-i18n="full_name">Non konplè</label><input type="text" id="full_name" required></div>
+      <div class="field"><label class="field-label" data-i18n="phone">Telefòn</label><input type="tel" id="phone" required></div>
+      <div class="field"><label class="field-label" data-i18n="whatsapp">WhatsApp</label><input type="tel" id="whatsapp"></div>
+      <div class="field"><label class="field-label" data-i18n="address">Adrès</label><input type="text" id="address" required></div>
+      <div class="field"><label class="field-label" data-i18n="city">Vil</label><input type="text" id="city"></div>
+      <div class="field"><label class="field-label" data-i18n="shipping_zone">Zòn livrezon</label>
+        <select id="shipping_zone">
+          <option value="300" data-i18n="shipping_zone">Pòtoprens — G 300</option>
+          <option value="600">Pwovens (Ayiti) — G 600</option>
+          <option value="800">Santo Domingo — G 800</option>
+          <option value="0">Retrè sou plas — G 0</option>
+        </select>
+      </div>
+      <div class="field"><label class="field-label" data-i18n="delivery_notes">Enstriksyon livrezon</label><textarea id="delivery_notes" rows="2"></textarea></div>
+
+      <h3 data-i18n="payment_method">Metòd peman</h3>
+      <label class="pay-option" id="opt-cod">
+        <input type="radio" name="payment_method" value="cash_on_delivery" checked>
+        <div><strong data-i18n="pay_on_delivery">PEYE LÈ LIVRE</strong><p style="margin:2px 0 0;font-size:.85rem;color:var(--ink-soft)" data-i18n="cod_note">Peye lè w resevwa</p></div>
+      </label>
+      <label class="pay-option" id="opt-paypal">
+        <input type="radio" name="payment_method" value="paypal">
+        <div><strong data-i18n="pay_paypal">Peye ak PayPal</strong><p style="margin:2px 0 0;font-size:.85rem;color:var(--ink-soft)" data-i18n="secure_payment_note">Peman an sekirite</p></div>
+      </label>
+
+      <div id="cod-submit">
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top:16px" data-i18n="place_order">Konfime kòmand</button>
+      </div>
+      <div id="paypal-button-container" style="display:none;margin-top:16px"></div>
+    </form>
+
+    <div class="jl-summary">
+      <h3 data-i18n="your_cart">Panyen ou</h3>
+      <div id="checkout-items" style="font-size:.9rem"></div>
+      <div class="jl-summary-row"><span data-i18n="subtotal">Sou-total</span><span id="c-subtotal">—</span></div>
+      <div class="jl-summary-row"><span data-i18n="shipping">Livrezon</span><span id="c-shipping">—</span></div>
+      <div class="jl-summary-row total"><span data-i18n="total">Total</span><span id="c-total">—</span></div>
+    </div>
+  </div>
+</main>
+<div id="jl-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="/js/config.js"></script>
+<script src="/data/products.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/i18n.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/layout.js"></script>
+<script src="/js/orders.js"></script>
+<script>
+if (window.JL_CONFIG.EMAILJS_PUBLIC_KEY && typeof emailjs !== 'undefined') {
+  emailjs.init({ publicKey: window.JL_CONFIG.EMAILJS_PUBLIC_KEY });
+}
+
+let cartDetails = [];
+let shippingFee = 300;
+
+function refreshCart() {
+  const currency = window.JL_I18N.currentCurrency();
+  cartDetails = window.JL_CART.cartDetails();
+  if (!cartDetails.length) { location.href = '/cart.html'; return; }
+  renderSummary();
+}
+
+function renderSummary() {
+  const currency = window.JL_I18N.currentCurrency();
+  const subtotal = cartDetails.reduce((sum, d) => sum + d.price * d.qty, 0);
+  document.getElementById('checkout-items').innerHTML = cartDetails.map(d =>
+    `<div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>${d.qty}× <span class="lang-ht">${d.name_ht}</span><span class="lang-es">${d.name_es}</span></span><span>${window.JL_STORE.formatMoney(d.price * d.qty, currency)}</span></div>`
+  ).join('');
+  const shippingConverted = window.JL_STORE.convert(shippingFee, currency);
+  document.getElementById('c-subtotal').textContent = window.JL_STORE.formatMoney(subtotal, currency);
+  document.getElementById('c-shipping').textContent = window.JL_STORE.formatMoney(shippingConverted, currency);
+  document.getElementById('c-total').textContent = window.JL_STORE.formatMoney(subtotal + shippingConverted, currency);
+  window.JL_I18N.applyTranslations();
+}
+
+document.getElementById('shipping_zone').addEventListener('change', (e) => {
+  shippingFee = Number(e.target.value);
+  renderSummary();
+});
+
+function showAlert(msg, type = 'error') {
+  document.getElementById('checkout-alert').innerHTML = `<div class="jl-alert ${type}">${msg}</div>`;
+}
+
+function buildFormData(extra) {
+  return {
+    full_name: document.getElementById('full_name').value,
+    phone: document.getElementById('phone').value,
+    whatsapp: document.getElementById('whatsapp').value,
+    address: document.getElementById('address').value,
+    city: document.getElementById('city').value,
+    delivery_notes: document.getElementById('delivery_notes').value,
+    shipping_fee_htg: shippingFee,
+    currency: window.JL_I18N.currentCurrency(),
+    ...extra,
+  };
+}
+
+document.querySelectorAll('input[name=payment_method]').forEach(r => r.addEventListener('change', togglePaymentUI));
+function togglePaymentUI() {
+  const method = document.querySelector('input[name=payment_method]:checked').value;
+  document.getElementById('cod-submit').style.display = method === 'cash_on_delivery' ? '' : 'none';
+  document.getElementById('paypal-button-container').style.display = method === 'paypal' ? '' : 'none';
+  document.getElementById('opt-cod').classList.toggle('selected', method === 'cash_on_delivery');
+  document.getElementById('opt-paypal').classList.toggle('selected', method === 'paypal');
+}
+
+document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    const order = await window.JL_ORDERS.createOrder(buildFormData({ payment_method: 'cash_on_delivery' }));
+    window.JL_CART.clearCart();
+    location.href = `/order-confirmation.html?order=${order.order_number}`;
+  } catch (err) { showAlert(err.message); }
+});
+
+function initPaypal() {
+  if (!window.JL_CONFIG.PAYPAL_CLIENT_ID) { document.getElementById('opt-paypal').style.display = 'none'; return; }
+  const script = document.createElement('script');
+  script.src = `https://www.paypal.com/sdk/js?client-id=${window.JL_CONFIG.PAYPAL_CLIENT_ID}&currency=USD`;
+  script.onload = () => {
+    paypal.Buttons({
+      createOrder: (data, actions) => {
+        if (!document.getElementById('full_name').value || !document.getElementById('phone').value || !document.getElementById('address').value) {
+          showAlert('Ranpli non, telefòn ak adrès anvan.');
+          return Promise.reject();
+        }
+        const subtotal = cartDetails.reduce((sum, d) => sum + d.price * d.qty, 0);
+        const total = subtotal + window.JL_STORE.convert(shippingFee, window.JL_I18N.currentCurrency());
+        // PayPal pa sipòte HTG/DOP — konvèti apwoksimatifman an USD pou fòm peman an sèlman.
+        const usd = Math.max(1, (total * 0.0076)).toFixed(2);
+        return actions.order.create({ purchase_units: [{ amount: { value: usd, currency_code: 'USD' } }] });
+      },
+      onApprove: async (data, actions) => {
+        try {
+          const details = await actions.order.capture();
+          const order = await window.JL_ORDERS.createOrder(buildFormData({ payment_method: 'paypal', paypal_transaction_id: details.id }));
+          window.JL_CART.clearCart();
+          location.href = `/order-confirmation.html?order=${order.order_number}`;
+        } catch (err) { showAlert(err.message); }
+      },
+      onError: () => showAlert('Yon erè PayPal rive. Eseye ankò.'),
+    }).render('#paypal-button-container');
+  };
+  document.body.appendChild(script);
+}
+
+document.addEventListener('DOMContentLoaded', () => { refreshCart(); initPaypal(); togglePaymentUI(); });
+document.addEventListener('jl:lang-changed', renderSummary);
+</script>
+</body>
+</html>

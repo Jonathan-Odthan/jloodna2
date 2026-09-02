@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — JLOODNA</title>
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+<!-- ===================== ÉCRAN DE CONNEXION ===================== -->
+<div id="login-screen" class="container" style="max-width:420px;padding-top:60px">
+  <div class="jl-auth-card">
+    <h2>🔐 Admin JLOODNA</h2>
+    <div id="login-alert"></div>
+    <div class="field"><label class="field-label">Modpas</label><input type="password" id="admin-password" placeholder="••••••••"></div>
+    <button class="btn btn-primary btn-block" id="login-btn">Konekte</button>
+  </div>
+</div>
+
+<!-- ===================== PANEL ADMIN ===================== -->
+<div id="admin-shell" class="admin-shell" style="display:none">
+  <aside class="admin-sidebar">
+    <h1>JLOODNA<br><small style="font-size:.7rem;opacity:.7">Panel Admin</small></h1>
+    <button class="tab-btn active" data-tab="dashboard">📊 Dashboard</button>
+    <button class="tab-btn" data-tab="products">📦 Pwodwi</button>
+    <button class="tab-btn" data-tab="categories">🗂️ Kategori</button>
+    <button class="tab-btn" data-tab="orders">🧾 Kòmand <span class="badge-count" id="orders-badge">0</span></button>
+    <button class="tab-btn" data-tab="deploy">🚀 Deplwaye</button>
+    <button class="tab-btn" data-tab="settings">⚙️ Paramèt</button>
+    <button class="tab-btn" id="logout-btn" style="margin-top:30px;opacity:.7">↩ Dekonekte</button>
+  </aside>
+
+  <main class="admin-main">
+
+    <!-- ---------------- DASHBOARD ---------------- -->
+    <section class="admin-tab active" id="tab-dashboard">
+      <h2>Dashboard</h2>
+      <div class="stat-grid" id="dash-stats"></div>
+      <div class="admin-card">
+        <h3>⚠️ Pwodwi ki gen stòk fèb</h3>
+        <div id="dash-low-stock"></div>
+      </div>
+    </section>
+
+    <!-- ---------------- PRODUITS ---------------- -->
+    <section class="admin-tab" id="tab-products">
+      <div class="jl-section-head"><h2>Pwodwi</h2><button class="btn btn-primary btn-sm" id="new-product-btn">+ Ajoute pwodwi</button></div>
+      <div class="admin-card"><div style="overflow-x:auto"><table class="admin-table" id="products-table"><thead>
+        <tr><th></th><th>Non</th><th>SKU</th><th>Pri (HTG)</th><th>Stòk</th><th>Estati</th><th></th></tr>
+      </thead><tbody></tbody></table></div></div>
+
+      <div class="admin-card" id="product-form-card" style="display:none">
+        <h3 id="product-form-title">Ajoute pwodwi</h3>
+        <div class="form-grid">
+          <div class="field"><label class="field-label">Non (Kreyòl) *</label><input type="text" id="f-name-ht"></div>
+          <div class="field"><label class="field-label">Non (Español) *</label><input type="text" id="f-name-es"></div>
+          <div class="field"><label class="field-label">SKU *</label><input type="text" id="f-sku"></div>
+          <div class="field"><label class="field-label">Mak</label><input type="text" id="f-brand"></div>
+          <div class="field"><label class="field-label">Pri (HTG) *</label><input type="number" id="f-price"></div>
+          <div class="field"><label class="field-label">Ansyen pri (HTG)</label><input type="number" id="f-old-price"></div>
+          <div class="field"><label class="field-label">Stòk</label><input type="number" id="f-stock" value="0"></div>
+          <div class="field"><label class="field-label">Kategori</label><select id="f-category"></select></div>
+        </div>
+        <div class="field"><label class="field-label">Deskripsyon (Kreyòl)</label><textarea id="f-desc-ht" rows="2"></textarea></div>
+        <div class="field"><label class="field-label">Deskripsyon (Español)</label><textarea id="f-desc-es" rows="2"></textarea></div>
+        <div class="field">
+          <label class="field-label">Imaj pwodwi (chwazi 1 oswa plizyè fichye)</label>
+          <input type="file" id="f-images" accept="image/*" multiple>
+          <div class="img-preview-row" id="img-preview"></div>
+        </div>
+        <div class="field">
+          <label><input type="checkbox" id="f-featured"> Mete nan "Pwodwi popilè"</label><br>
+          <label><input type="checkbox" id="f-new"> Mete nan "Nouvo pwodwi"</label><br>
+          <label><input type="checkbox" id="f-active" checked> Aktif (vizib nan boutik la)</label>
+        </div>
+        <button class="btn btn-primary" id="save-product-btn">💾 Anrejistre</button>
+        <button class="btn btn-outline" id="cancel-product-btn">Anile</button>
+      </div>
+    </section>
+
+    <!-- ---------------- CATÉGORIES ---------------- -->
+    <section class="admin-tab" id="tab-categories">
+      <h2>Kategori</h2>
+      <div class="admin-card">
+        <div class="form-grid">
+          <div class="field"><label class="field-label">Non (Kreyòl)</label><input type="text" id="cat-name-ht"></div>
+          <div class="field"><label class="field-label">Non (Español)</label><input type="text" id="cat-name-es"></div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="add-category-btn">+ Ajoute kategori</button>
+      </div>
+      <div class="admin-card"><table class="admin-table" id="categories-table"><thead><tr><th>Kreyòl</th><th>Español</th><th></th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- ---------------- COMMANDES ---------------- -->
+    <section class="admin-tab" id="tab-orders">
+      <h2>Kòmand</h2>
+      <p style="font-size:.85rem;color:var(--ink-soft)">⚠️ Lis anba a montre sèlman kòmand ki te pase sou APARÈY sa a. Notifikasyon imel ou resevwa nan jloodna@gmail.com se sous prensipal ou pou tout kòmand, kèlkeswa aparèy kliyan an itilize.</p>
+      <div class="admin-card"><div style="overflow-x:auto"><table class="admin-table" id="orders-table"><thead>
+        <tr><th>Nimewo</th><th>Kliyan</th><th>Total</th><th>Peman</th><th>Estati</th><th>Dat</th></tr>
+      </thead><tbody></tbody></table></div></div>
+    </section>
+
+    <!-- ---------------- DÉPLOIEMENT ---------------- -->
+    <section class="admin-tab" id="tab-deploy">
+      <h2>Deplwaye chanjman yo</h2>
+      <div class="admin-card">
+        <p>Chanjman ou fè nan "Pwodwi" ak "Kategori" parèt touswit isit la (pou ou), men yo <strong>poko vizib pou lòt kliyan</strong> jiskaske ou telechaje fichye a epi mete l sou GitHub oswa Netlify.</p>
+        <ol>
+          <li>Klike <strong>"⬇️ Telechaje products.js"</strong> anba a.</li>
+          <li>Ranplase fichye <code>data/products.js</code> nan repo GitHub ou (oswa dosye Netlify ou) ak nouvo fichye a.</li>
+          <li>Tann kèk segond pou sit la re-deplwaye otomatikman.</li>
+        </ol>
+        <button class="btn btn-primary" id="export-btn">⬇️ Telechaje products.js</button>
+        <button class="btn btn-outline" id="reset-preview-btn">↺ Retounen a vèsyon deplwaye a</button>
+      </div>
+    </section>
+
+    <!-- ---------------- PARAMÈTRES ---------------- -->
+    <section class="admin-tab" id="tab-settings">
+      <h2>Paramèt</h2>
+      <div class="admin-card">
+        <p><strong>Imel admin:</strong> <span id="set-email"></span></p>
+        <div class="field"><label class="field-label">To echanj HTG → DOP</label>
+          <div style="display:flex;gap:8px"><input type="number" step="0.01" id="set-rate"><button class="btn btn-sm btn-primary" id="save-rate-btn">Anrejistre</button></div>
+        </div>
+        <p><strong>Notifikasyon imel (EmailJS):</strong> <span id="set-emailjs-status"></span></p>
+        <p style="font-size:.85rem;color:var(--ink-soft)">Pou aktive notifikasyon imel, ranpli EMAILJS_PUBLIC_KEY, EMAILJS_SERVICE_ID ak EMAILJS_TEMPLATE_ID nan fichye <code>js/config.js</code> (wè README.md pou enstriksyon pa-a-pa).</p>
+        <p><strong>PayPal:</strong> <span id="set-paypal-status"></span></p>
+        <p style="font-size:.85rem;color:var(--ink-soft)">Pou chanje modpas admin sa a, modifye <code>ADMIN_PASSWORD</code> nan <code>js/config.js</code>.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="/js/config.js"></script>
+<script src="/data/products.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/i18n.js"></script>
+<script src="/js/orders.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

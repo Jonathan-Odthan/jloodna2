@@ -1,0 +1,24 @@
+body { background: var(--paper-dim); }
+.admin-shell { display: grid; grid-template-columns: 1fr; min-height: 100vh; }
+@media (min-width: 860px) { .admin-shell { grid-template-columns: 220px 1fr; } }
+.admin-sidebar { background: var(--teal-900); color: white; padding: 20px 14px; }
+.admin-sidebar h1 { color: white; font-size: 1.3rem; margin-bottom: 20px; }
+.admin-sidebar .tab-btn { display: block; width: 100%; text-align: left; background: transparent; border: none; color: #cfe9e5; padding: 10px 12px; border-radius: 8px; font-weight: 600; margin-bottom: 4px; }
+.admin-sidebar .tab-btn.active, .admin-sidebar .tab-btn:hover { background: var(--teal-700); color: white; }
+.admin-main { padding: 24px; max-width: 1100px; }
+.admin-tab { display: none; }
+.admin-tab.active { display: block; }
+.admin-card { background: white; border-radius: var(--radius); border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; }
+table.admin-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+table.admin-table th, table.admin-table td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); }
+table.admin-table th { color: var(--ink-soft); font-size: .78rem; text-transform: uppercase; }
+.thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; background: var(--paper-dim); }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 14px; margin-bottom: 20px; }
+.stat-box { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.stat-box .num { font-size: 1.6rem; font-weight: 700; color: var(--teal-900); }
+.stat-box .label { font-size: .8rem; color: var(--ink-soft); }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+.img-preview-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.img-preview-row img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
+.badge-count { background: var(--coral-500); color: white; border-radius: 999px; font-size: .7rem; padding: 1px 7px; margin-left: 6px; }

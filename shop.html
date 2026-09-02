@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boutik — JLOODNA</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div id="jl-header"></div>
+<main class="container jl-section">
+  <div class="breadcrumb"><a href="/index.html" data-i18n="nav_home">Akèy</a> / <span data-i18n="nav_shop">Boutik</span></div>
+  <div class="jl-shop-layout">
+    <aside class="jl-filters">
+      <h4 data-i18n="nav_categories">Kategori</h4>
+      <div id="cat-filters"></div>
+      <h4 style="margin-top:18px" data-i18n="sort_by">Klase pa</h4>
+      <select id="sort-select">
+        <option value="newest" data-i18n="new_products">Nouvo</option>
+        <option value="price_asc">Pri ↑</option>
+        <option value="price_desc">Pri ↓</option>
+        <option value="popular" data-i18n="featured_products">Popilè</option>
+      </select>
+    </aside>
+    <section>
+      <div class="jl-section-head"><h2 id="results-title" data-i18n="search_results">Rezilta rechèch</h2></div>
+      <div class="jl-grid" id="shop-grid"></div>
+    </section>
+  </div>
+</main>
+<div id="jl-footer"></div>
+<script src="/js/config.js"></script>
+<script src="/data/products.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/i18n.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/layout.js"></script>
+<script src="/js/product-card.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+
+function loadCategories() {
+  const cats = window.JL_STORE.getCategories();
+  document.getElementById('cat-filters').innerHTML = cats.map(c => `
+    <label><input type="checkbox" class="cat-check" value="${c.id}" ${params.get('category') == c.id ? 'checked' : ''}>
+      <span class="lang-ht">${c.name_ht}</span><span class="lang-es">${c.name_es}</span></label>`).join('');
+  window.JL_I18N.applyTranslations();
+  document.querySelectorAll('.cat-check').forEach(cb => cb.addEventListener('change', loadProducts));
+}
+
+function loadProducts() {
+  let products = window.JL_STORE.getProducts().filter(p => p.status === 'active');
+  const q = (params.get('q') || '').toLowerCase();
+  const featured = params.get('featured');
+  const isNew = params.get('is_new');
+  const checked = [...document.querySelectorAll('.cat-check:checked')].map(c => Number(c.value));
+  const sort = document.getElementById('sort-select').value;
+
+  if (q) products = products.filter(p => (p.name_ht + p.name_es + (p.brand || '') + p.sku).toLowerCase().includes(q));
+  if (featured) products = products.filter(p => p.is_featured);
+  if (isNew) products = products.filter(p => p.is_new);
+  if (checked.length) products = products.filter(p => checked.includes(p.category_id));
+
+  if (sort === 'price_asc') products.sort((a, b) => a.price_htg - b.price_htg);
+  else if (sort === 'price_desc') products.sort((a, b) => b.price_htg - a.price_htg);
+  else if (sort === 'popular') products.sort((a, b) => (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0));
+  else products.sort((a, b) => (b.id - a.id));
+
+  document.getElementById('results-title').textContent = q ? `${window.JL_I18N.t('search_results')}: "${q}"` : window.JL_I18N.t('nav_shop');
+  document.getElementById('shop-grid').innerHTML = products.map(renderProductCard).join('') || `<p class="empty-state"><span class="icon">🔍</span><br><span data-i18n="no_results">Pa gen rezilta.</span></p>`;
+  window.JL_I18N.applyTranslations();
+}
+
+document.getElementById('sort-select').addEventListener('change', loadProducts);
+document.addEventListener('DOMContentLoaded', () => { loadCategories(); loadProducts(); });
+document.addEventListener('jl:lang-changed', loadProducts);
+</script>
+</body>
+</html>

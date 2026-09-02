@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="your_cart">Panyen — JLOODNA</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div id="jl-header"></div>
+<main class="container jl-section">
+  <h1 data-i18n="your_cart">Panyen ou</h1>
+  <div class="jl-checkout-grid">
+    <div id="cart-items"></div>
+    <div class="jl-summary">
+      <div class="jl-summary-row"><span data-i18n="subtotal">Sou-total</span><span id="sum-subtotal">—</span></div>
+      <div class="jl-summary-row total"><span data-i18n="total">Total</span><span id="sum-total">—</span></div>
+      <a href="/checkout.html" class="btn btn-primary btn-block" id="checkout-btn" data-i18n="checkout">Peye kounye a</a>
+      <a href="/shop.html" class="btn btn-outline btn-block" style="margin-top:8px" data-i18n="continue_shopping">Kontinye achte</a>
+    </div>
+  </div>
+</main>
+<div id="jl-footer"></div>
+<script src="/js/config.js"></script>
+<script src="/data/products.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/i18n.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/layout.js"></script>
+<script>
+function renderCart() {
+  const currency = window.JL_I18N.currentCurrency();
+  const details = window.JL_CART.cartDetails();
+  const container = document.getElementById('cart-items');
+  const checkoutBtn = document.getElementById('checkout-btn');
+  if (!details.length) {
+    container.innerHTML = `<p class="empty-state"><span class="icon">🛒</span><br><span data-i18n="empty_cart">Panyen ou vid.</span></p>`;
+    document.getElementById('sum-subtotal').textContent = window.JL_STORE.formatMoney(0, currency);
+    document.getElementById('sum-total').textContent = window.JL_STORE.formatMoney(0, currency);
+    checkoutBtn.style.pointerEvents = 'none'; checkoutBtn.style.opacity = '.5';
+    window.JL_I18N.applyTranslations();
+    return;
+  }
+  checkoutBtn.style.pointerEvents = ''; checkoutBtn.style.opacity = '';
+  let subtotal = 0;
+  container.innerHTML = details.map(d => {
+    subtotal += d.price * d.qty;
+    const img = (d.images && d.images[0]) || '/img/products/placeholder-1.svg';
+    return `<div class="jl-cart-item">
+      <img src="${img}">
+      <div>
+        <h3 style="margin:0 0 4px;font-size:.95rem"><span class="lang-ht">${d.name_ht}</span><span class="lang-es">${d.name_es}</span></h3>
+        <div class="jl-price"><span class="now">${window.JL_STORE.formatMoney(d.price, currency)}</span></div>
+        <div class="jl-qty" style="margin-top:6px">
+          <button onclick="changeCartQty(${d.id},${d.qty - 1})">−</button>
+          <span>${d.qty}</span>
+          <button onclick="changeCartQty(${d.id},${d.qty + 1})">+</button>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-outline" onclick="removeCartItem(${d.id})" data-i18n="remove">Retire</button>
+    </div>`;
+  }).join('');
+  document.getElementById('sum-subtotal').textContent = window.JL_STORE.formatMoney(subtotal, currency);
+  document.getElementById('sum-total').textContent = window.JL_STORE.formatMoney(subtotal, currency);
+  window.JL_I18N.applyTranslations();
+}
+function changeCartQty(productId, qty) { window.JL_CART.updateCartQty(productId, qty); renderCart(); }
+function removeCartItem(productId) { window.JL_CART.removeFromCart(productId); renderCart(); }
+document.addEventListener('DOMContentLoaded', renderCart);
+document.addEventListener('jl:lang-changed', renderCart);
+</script>
+</body>
+</html>

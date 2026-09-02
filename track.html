@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ht">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="track_order">Swiv kòmand — JLOODNA</title><link rel="stylesheet" href="/css/style.css"></head>
+<body>
+<div id="jl-header"></div>
+<main class="container jl-section" style="max-width:600px">
+  <h1 data-i18n="track_order">Swiv kòmand</h1>
+  <div class="field"><label class="field-label" data-i18n="order_number">Nimewo kòmand</label>
+    <div style="display:flex;gap:8px"><input type="text" id="order-input" placeholder="JL-10001">
+    <button class="btn btn-primary" id="track-btn" data-i18n="track_order">Swiv</button></div></div>
+  <p style="font-size:.85rem;color:var(--ink-soft)"><span class="lang-ht">Nòt: swivi a mache sèlman sou aparèy/navigatè kote kòmand la te pase.</span><span class="lang-es">Nota: el seguimiento solo funciona en el dispositivo/navegador donde se hizo el pedido.</span></p>
+  <div id="track-result"></div>
+</main>
+<div id="jl-footer"></div>
+<script src="/js/config.js"></script>
+<script src="/data/products.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/i18n.js"></script>
+<script src="/js/cart.js"></script>
+<script src="/js/layout.js"></script>
+<script src="/js/orders.js"></script>
+<script>
+const STEPS = ['new','confirmed','preparing','shipped','delivering','delivered'];
+document.getElementById('track-btn').addEventListener('click', () => {
+  const num = document.getElementById('order-input').value.trim();
+  const box = document.getElementById('track-result');
+  const o = window.JL_ORDERS.getOrders().find(x => x.order_number === num);
+  if (!o) { box.innerHTML = `<div class="jl-alert error">Kòmand pa jwenn sou aparèy sa a.</div>`; return; }
+  const idx = STEPS.indexOf(o.order_status);
+  box.innerHTML = `<div class="jl-summary">
+    <p><span data-i18n="order_number">Nimewo</span>: <strong>${o.order_number}</strong></p>
+    <p><span class="status-pill ${o.order_status}" data-i18n="order_status_${o.order_status}">${o.order_status}</span></p>
+    <ol>${STEPS.map((s,i) => `<li style="color:${i<=idx?'var(--success)':'var(--ink-soft)'}" data-i18n="order_status_${s}">${s}</li>`).join('')}</ol>
+  </div>`;
+  window.JL_I18N.applyTranslations();
+});
+</script>
+</body></html>
