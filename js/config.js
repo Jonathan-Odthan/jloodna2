@@ -9,7 +9,7 @@ window.JL_CONFIG = {
 
   // Modpas pou antre nan panel admin (admin.html). Se yon pwoteksyon LEJÈ sèlman —
   // nenpòt moun ki gade kòd sous paj la ka wè l. Pou chanje l, modifye liy anba a.
-  ADMIN_PASSWORD: '@JLoodna-2002',
+  ADMIN_PASSWORD: '@JLoodnA#20-02',
 
   // PayPal — SÈLMAN "Client ID" la (piblik) ka ale isit la. JAMÈ "Client Secret" la.
   PAYPAL_CLIENT_ID: 'AdI4wGqusD1U_r2ng3TxPlIUpNdHFN0CkoVc1bTtUuGumlKeItEm7kgy74gym9w-rPs4-D0lANzmZq5j',
