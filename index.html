@@ -23,7 +23,7 @@
   <section class="jl-section">
     <div class="jl-section-head">
       <h2 data-i18n="featured_products">Pwodwi popilè</h2>
-      <a href="/shop.html?featured=1" data-i18n="view_all">Wè tout</a>
+      <a href="/boutique.html?featured=1" data-i18n="view_all">Wè tout</a>
     </div>
     <div class="jl-grid" id="featured-grid"></div>
   </section>
@@ -31,7 +31,7 @@
   <section class="jl-section">
     <div class="jl-section-head">
       <h2 data-i18n="new_products">Nouvo pwodwi</h2>
-      <a href="/shop.html?is_new=1" data-i18n="view_all">Wè tout</a>
+      <a href="/boutique.html?is_new=1" data-i18n="view_all">Wè tout</a>
     </div>
     <div class="jl-grid" id="new-grid"></div>
   </section>
@@ -45,13 +45,13 @@
 
 <div id="jl-footer"></div>
 
-<script src="/js/config.js"></script>
-<script src="/data/products.js"></script>
-<script src="/js/store.js"></script>
-<script src="/js/i18n.js"></script>
-<script src="/js/cart.js"></script>
-<script src="/js/layout.js"></script>
-<script src="/js/product-card.js"></script>
+<script src="./js/config.js"></script>
+<script src="./data/products.js"></script>
+<script src="./js/store.js"></script>
+<script src="./js/i18n.js"></script>
+<script src="./js/cart.js"></script>
+<script src="./js/layout.js"></script>
+<script src="./js/product-card.js"></script>
 <script>
 function loadHome() {
   const products = window.JL_STORE.getProducts().filter(p => p.status === 'active');
