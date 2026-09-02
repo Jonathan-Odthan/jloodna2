@@ -9,12 +9,12 @@ function renderProductCard(p) {
   const outOfStock = p.stock <= 0;
   return `
   <div class="jl-card">
-    <a href="/product.html?slug=${p.slug}" class="jl-card-img">
+    <a href="./product.html?slug=${p.slug}" class="jl-card-img">
       <img src="${img}" alt="${p.name_ht}" loading="lazy">
       ${badge}
     </a>
     <div class="jl-card-body">
-      <h3><a href="/product.html?slug=${p.slug}"><span class="lang-ht">${p.name_ht}</span><span class="lang-es">${p.name_es}</span></a></h3>
+      <h3><a href="./product.html?slug=${p.slug}"><span class="lang-ht">${p.name_ht}</span><span class="lang-es">${p.name_es}</span></a></h3>
       <div class="jl-price"><span class="now">${window.JL_STORE.formatMoney(price, currency)}</span>${oldPriceHtml}</div>
       <button class="btn btn-teal btn-sm" ${outOfStock ? 'disabled' : ''} onclick="window.JL_CART.addToCart(${p.id},1); this.textContent='✓'">
         <span data-i18n="${outOfStock ? 'out_of_stock' : 'add_to_cart'}">${outOfStock ? 'Pa gen stòk' : 'Ajoute nan panyen'}</span>
