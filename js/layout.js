@@ -62,7 +62,7 @@
     const el = document.getElementById('jl-catnav-list');
     if (!el) return;
     const cats = window.JL_STORE.getCategories();
-    el.innerHTML = cats.map(c => `<a href="/shop.html?category=${c.id}"><span class="lang-ht">${c.name_ht}</span><span class="lang-es">${c.name_es}</span></a>`).join('');
+    el.innerHTML = cats.map(c => `<a href="./shop.html?category=${c.id}"><span class="lang-ht">${c.name_ht}</span><span class="lang-es">${c.name_es}</span></a>`).join('');
   }
 
   function mount() {
